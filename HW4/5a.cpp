@@ -1,22 +1,34 @@
 class Solution {
 public:
-    bool isIsomorphic(string s, string t) {
+int minCostConnectPoints(vector<vector<int>>& points) {
+    int n = points.size();
+    int totalCost = 0;
+    int currentNode = 0;
+    int connectedPoints = 0;
+    vector<bool> visited(n, false);
+    priority_queue<pair<int, int>> pq; // distance, index
+    
+    while (connectedPoints < n - 1) {
+        visited[currentNode] = true;
 
-    unordered_map<char, char> ST; // map s to t
-    unordered_map<char, char> TS; // map t to s
-
-    for (int i = 0; i < s.size(); ++i) {
-        if (ST.count(s[i]) > 0 && ST[s[i]] != t[i])
-            return false; // mismatch in s
-
-        if (TS.count(t[i]) > 0 && TS[t[i]] != s[i])
-            return false; // mismatch in t
-
-        // Update mapping
-        ST[s[i]] = t[i]; 
-        TS[t[i]] = s[i]; 
+        // distance for unvisited points and push to pq
+        for (int i = 0; i < n; ++i) {
+            if (!visited[i]) {
+                int distance = abs(points[currentNode][0] - points[i][0]) + abs(points[currentNode][1] - points[i][1]);
+                pq.push({-distance, i});
+            }
+        }
+        
+        // skip visited nodes in the queue
+        while (visited[pq.top().second]) {
+            pq.pop();
+        }
+        
+        totalCost -= pq.top().first;
+        currentNode = pq.top().second;
+        pq.pop();
+        connectedPoints++;
     }
 
-    return true; // S and T are isomorphic
-    }
-};
+    return totalCost;
+}
